@@ -94,18 +94,18 @@ function renderHIMG(text) {
   });
 }
 
-// abrir HIMG manual
 document.getElementById("file").addEventListener("change", function(e) {
   const file = e.target.files[0];
   const reader = new FileReader();
+
   reader.onload = () => {
     renderHIMG(reader.result);
     document.getElementById("output").value = reader.result;
   };
+
   reader.readAsText(file);
 });
 
-// PNG → HIMG
 document.getElementById("pngInput").addEventListener("change", function(e) {
   const file = e.target.files[0];
   const img = new Image();
@@ -133,7 +133,7 @@ document.getElementById("pngInput").addEventListener("change", function(e) {
         const r = data[i++];
         const g = data[i++];
         const b = data[i++];
-        i++; // alpha
+        i++;
 
         row.push(
           r.toString(16).padStart(2, "0").toUpperCase() +
@@ -151,16 +151,31 @@ document.getElementById("pngInput").addEventListener("change", function(e) {
   img.src = URL.createObjectURL(file);
 });
 
-// download
 function downloadHIMG() {
   const text = document.getElementById("output").value;
 
-  const blob = new Blob([text], { type: "text/plain" });
+  const blob = new Blob([text], { type: "application/x-himg" });
   const a = document.createElement("a");
 
   a.href = URL.createObjectURL(blob);
   a.download = "image.himg";
+
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
+}
+
+const params = new URLSearchParams(window.location.search);
+const fileUrl = params.get("file");
+
+if (fileUrl) {
+  fetch(fileUrl)
+    .then(res => res.text())
+    .then(text => {
+      renderHIMG(text);
+      document.getElementById("output").value = text;
+    })
+    .catch(() => alert("Failed to load file"));
 }
 </script>
 
