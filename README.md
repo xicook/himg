@@ -1,5 +1,6 @@
 site:
-xicook.github.io/himg
+
+https://xicook.github.io/himg
 
 generate.py is discontinued
 
