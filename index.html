@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HIMG Tool</title>
+
+<style>
+body {
+  background: #0f0f0f;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+canvas {
+  margin-top: 20px;
+  image-rendering: pixelated;
+  border: 1px solid #333;
+}
+
+textarea {
+  width: 90%;
+  height: 200px;
+  margin-top: 15px;
+  background: #111;
+  color: #0f0;
+  border: 1px solid #333;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  background: #222;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>HIMG Tool</h1>
+
+<h3>Open HIMG</h3>
+<input type="file" id="file">
+
+<h3>Convert PNG → HIMG</h3>
+<input type="file" id="pngInput" accept="image/png">
+
+<br>
+<canvas id="canvas"></canvas>
+
+<textarea id="output" placeholder="HIMG output will appear here..."></textarea>
+<br>
+
+<button onclick="downloadHIMG()">Download .himg</button>
+
+<script>
+function renderHIMG(text) {
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+
+  if (lines[0] !== "HIMG") {
+    alert("Invalid HIMG file");
+    return;
+  }
+
+  const [width, height] = lines[1].split(" ").map(Number);
+  const data = lines.slice(2);
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = width;
+  canvas.height = height;
+
+  let y = 0;
+
+  data.forEach(row => {
+    const cols = row.split(" ");
+    let x = 0;
+
+    cols.forEach(hex => {
+      const r = parseInt(hex.substring(0,2), 16);
+      const g = parseInt(hex.substring(2,4), 16);
+      const b = parseInt(hex.substring(4,6), 16);
+
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(x, y, 1, 1);
+
+      x++;
+    });
+
+    y++;
+  });
+}
+
+// abrir HIMG manual
+document.getElementById("file").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    renderHIMG(reader.result);
+    document.getElementById("output").value = reader.result;
+  };
+  reader.readAsText(file);
+});
+
+// PNG → HIMG
+document.getElementById("pngInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  const img = new Image();
+
+  img.onload = function() {
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx.drawImage(img, 0, 0);
+
+    const data = ctx.getImageData(0, 0, img.width, img.height).data;
+
+    let output = "HIMG\n";
+    output += img.width + " " + img.height + "\n";
+
+    let i = 0;
+
+    for (let y = 0; y < img.height; y++) {
+      let row = [];
+
+      for (let x = 0; x < img.width; x++) {
+        const r = data[i++];
+        const g = data[i++];
+        const b = data[i++];
+        i++; // alpha
+
+        row.push(
+          r.toString(16).padStart(2, "0").toUpperCase() +
+          g.toString(16).padStart(2, "0").toUpperCase() +
+          b.toString(16).padStart(2, "0").toUpperCase()
+        );
+      }
+
+      output += row.join(" ") + "\n";
+    }
+
+    document.getElementById("output").value = output;
+  };
+
+  img.src = URL.createObjectURL(file);
+});
+
+// download
+function downloadHIMG() {
+  const text = document.getElementById("output").value;
+
+  const blob = new Blob([text], { type: "text/plain" });
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+  a.download = "image.himg";
+  a.click();
+}
+</script>
+
+</body>
+</html>
