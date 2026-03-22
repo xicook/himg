@@ -19,7 +19,7 @@ Easy to parse
 Works directly in the browser
 Web Tool (Official)
 Use the online tool:
-https://xicook.github.io/himg/⁠�
+https://xicook.github.io/himg/⁠
 Features:
 Open .himg
 Convert image → HIMG
