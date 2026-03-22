@@ -48,7 +48,8 @@ https://xicook.github.io/himg/
 
 ## Deprecated
 
-> ⚠️ The old Python tools (including `generate.py`) were experimental and have been discontinued.  
+> [!WARNING]
+> The old Python tools (including `generate.py`) were experimental and have been discontinued.
 > The official way to use HIMG is now through the web tool.
 
 
@@ -70,7 +71,8 @@ RRGGBB
 
 ## Limitations
 
-> ⚠️ HIMG is not optimized for performance or size.
+> [!NOTE]
+> HIMG is not optimized for performance or file size.
 
 - Large file sizes  
 - No compression  
