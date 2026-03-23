@@ -82,7 +82,7 @@ button:hover {
 <div class="container">
 
   <div class="box">
-    <h3>Open HIMG</h3>
+    <h3>Open HIMG / HIMGC</h3>
     <input type="file" id="file">
   </div>
 
@@ -101,6 +101,7 @@ button:hover {
   <div class="box">
     <h3>Download</h3>
     <button id="downloadBtn" onclick="downloadHIMG()">Download .himg</button>
+    <button id="downloadCBtn" onclick="downloadHIMGC()">Download .himgc</button>
   </div>
 
 </div>
@@ -110,9 +111,7 @@ let currentHIMG = "";
 
 function fitCanvas(canvas, width, height) {
   const maxSize = 300;
-
   let scale = Math.min(maxSize / width, maxSize / height, 1);
-
   canvas.style.width = width * scale + "px";
   canvas.style.height = height * scale + "px";
 }
@@ -126,7 +125,9 @@ function renderHIMG(text) {
   }
 
   currentHIMG = text;
+
   document.getElementById("downloadBtn").style.display = "block";
+  document.getElementById("downloadCBtn").style.display = "block";
 
   const [width, height] = lines[1].split(" ").map(Number);
   const data = lines.slice(2);
@@ -160,15 +161,17 @@ function renderHIMG(text) {
   });
 }
 
-document.getElementById("file").addEventListener("change", function(e) {
+document.getElementById("file").addEventListener("change", async function(e) {
   const file = e.target.files[0];
-  const reader = new FileReader();
 
-  reader.onload = () => {
-    renderHIMG(reader.result);
-  };
-
-  reader.readAsText(file);
+  if (file.name.endsWith(".himgc")) {
+    const text = await decompressHIMGC(file);
+    renderHIMG(text);
+  } else {
+    const reader = new FileReader();
+    reader.onload = () => renderHIMG(reader.result);
+    reader.readAsText(file);
+  }
 });
 
 document.getElementById("pngInput").addEventListener("change", function(e) {
@@ -176,12 +179,6 @@ document.getElementById("pngInput").addEventListener("change", function(e) {
   const img = new Image();
 
   img.onload = function() {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-
     const dataCanvas = document.createElement("canvas");
     const dataCtx = dataCanvas.getContext("2d");
 
@@ -217,8 +214,11 @@ document.getElementById("pngInput").addEventListener("change", function(e) {
     }
 
     currentHIMG = output;
-    document.getElementById("downloadBtn").style.display = "block";
 
+    document.getElementById("downloadBtn").style.display = "block";
+    document.getElementById("downloadCBtn").style.display = "block";
+
+    const canvas = document.getElementById("canvas");
     canvas.width = 0;
     canvas.height = 0;
   };
@@ -236,6 +236,34 @@ function downloadHIMG() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+}
+
+async function downloadHIMGC() {
+  const blob = await compressHIMG(currentHIMG);
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "image.himgc";
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+async function compressHIMG(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+
+  const compressed = await new Response(
+    new Blob([data]).stream().pipeThrough(new CompressionStream("gzip"))
+  ).arrayBuffer();
+
+  return new Blob([compressed], { type: "application/x-himgc" });
+}
+
+async function decompressHIMGC(file) {
+  const stream = file.stream().pipeThrough(new DecompressionStream("gzip"));
+  return await new Response(stream).text();
 }
 
 const params = new URLSearchParams(window.location.search);
