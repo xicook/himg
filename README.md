@@ -1,4 +1,4 @@
-HIMG (Hex Image Format)
+# HIMG (Hex Image Format)
 
 HIMG is a simple image format where every pixel is stored as readable HEX values.
 
@@ -6,7 +6,7 @@ Instead of compression or binary encoding, HIMG stores raw RGB data in plain tex
 
 ---
 
-Example
+## Example
 
 HIMG
 4 2
@@ -21,7 +21,7 @@ Each value represents one pixel in RGB format:
 
 ---
 
-Features
+## Features
 
 - Human-readable image format
 - No compression (.himg)
@@ -32,13 +32,13 @@ Features
 
 ---
 
-Web Tool (Official)
+## Web Tool (Official)
 
 Use the online tool:
 
 https://xicook.github.io/himg/
 
-Features
+### Features
 
 - Open .himg and .himgc
 - Convert image → HIMG
@@ -48,7 +48,7 @@ Features
 
 ---
 
-HIMGC (Compressed Format)
+## HIMGC (Compressed Format)
 
 .himgc is the compressed version of .himg.
 
@@ -59,7 +59,7 @@ HIMGC (Compressed Format)
 
 ---
 
-Deprecated
+## Deprecated
 
 «[!WARNING]
 The old Python tools (including generate.py) were experimental and have been discontinued.
@@ -67,7 +67,7 @@ The official way to use HIMG is now through the web tool.»
 
 ---
 
-Format Specification
+## Format Specification
 
 HIMG
 <width> <height>
@@ -75,7 +75,7 @@ HIMG
 <pixel row 2>
 ...
 
-Pixel format
+### Pixel format
 
 RRGGBB
 
@@ -85,7 +85,7 @@ RRGGBB
 
 ---
 
-Limitations
+## Limitations
 
 «[!NOTE]
 HIMG is not optimized for performance or file size.»
@@ -97,7 +97,7 @@ HIMG is not optimized for performance or file size.»
 
 ---
 
-Future Ideas
+## Future Ideas
 
 - RGBA support
 - Custom compression (beyond gzip)
@@ -107,12 +107,12 @@ Future Ideas
 
 ---
 
-Why
+## Why
 
 HIMG is a simple project to demonstrate how image data can be represented in a human-readable way.
 
 ---
 
-License
+## License
 
 ""License: Public Domain" (https://img.shields.io/badge/license-Public%20Domain-blue)" (./LICENSE)
