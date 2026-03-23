@@ -48,6 +48,18 @@ https://xicook.github.io/himg/
 
 ---
 
+## HIMG vs HIMGC
+
+Feature| HIMG (.himg)| HIMGC (.himgc)
+Readable| Yes| No
+Compression| None| GZIP
+File size| Very large| Much smaller
+Speed| Slower| Faster to load
+Debugging| Easy| Hard
+Use case| Learning / debug| Real usage / sharing
+
+---
+
 ## HIMGC (Compressed Format)
 
 .himgc is the compressed version of .himg.
@@ -63,6 +75,7 @@ https://xicook.github.io/himg/
 
 «[!WARNING]
 The old Python tools (including generate.py) were experimental and have been discontinued.
+
 The official way to use HIMG is now through the web tool.»
 
 ---
@@ -88,12 +101,12 @@ RRGGBB
 ## Limitations
 
 «[!NOTE]
-HIMG is not optimized for performance or file size.»
+HIMG is not optimized for performance or file size.
 
 - Large file sizes (.himg)
 - No compression in base format
 - No transparency support (yet)
-- Slow for high resolutions
+- Slow for high resolutions»
 
 ---
 
