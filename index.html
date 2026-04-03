@@ -4,276 +4,673 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HIMG Tool</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f0f0f;
-  color: white;
-}
+  :root {
+    --pink: #ff4d8d;
+    --yellow: #ffe44d;
+    --cyan: #4dffee;
+    --purple: #a855f7;
+    --orange: #ff7b2f;
+    --bg: #0d0d14;
+    --card: #13131f;
+    --border: #2a2a40;
+  }
 
-h1 {
-  text-align: center;
-  padding: 10px;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  padding: 10px;
-}
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-.box {
-  background: #1a1a1a;
-  border-radius: 10px;
-  padding: 15px;
-  width: 320px;
-  max-width: 95%;
-  box-shadow: 0 0 10px #000;
-}
+  /* animated gradient bg blobs */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff4d8d22, transparent 70%);
+    top: -150px; left: -150px;
+    animation: drift 8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #4dffee22, transparent 70%);
+    bottom: -100px; right: -100px;
+    animation: drift 10s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-.box h3 {
-  margin-top: 0;
-}
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(40px, 30px); }
+  }
 
-input {
-  width: 100%;
-  margin-top: 10px;
-}
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 48px 20px 32px;
+  }
 
-.preview-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  border-radius: 8px;
-  height: 320px;
-  overflow: hidden;
-}
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
 
-canvas {
-  image-rendering: pixelated;
-}
+  .logo-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    overflow: hidden;
+    box-shadow: 0 0 20px #ff4d8d66;
+  }
+  .logo-icon span:nth-child(1) { background: var(--pink); }
+  .logo-icon span:nth-child(2) { background: var(--cyan); }
+  .logo-icon span:nth-child(3) { background: var(--yellow); }
+  .logo-icon span:nth-child(4) { background: var(--purple); }
 
-button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background: #2a2a2a;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: none;
-}
+  h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--pink), var(--yellow), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
 
-button:hover {
-  background: #3a3a3a;
-}
+  .tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: #666;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* MAIN LAYOUT */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "open convert"
+      "preview preview"
+      "download download";
+    gap: 16px;
+  }
+
+  .card.pink   { grid-area: open; }
+  .card.cyan   { grid-area: convert; }
+  .card.yellow { grid-area: preview; }
+  .card.purple { grid-area: download; }
+
+  /* DESKTOP: side-by-side download buttons */
+  @media (min-width: 900px) {
+    main {
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-areas:
+        "open convert download"
+        "preview preview preview";
+      max-width: 1100px;
+    }
+    .card.purple { grid-area: download; }
+    .card.yellow { grid-area: preview; }
+    .btn-group { flex-direction: column; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    main {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "open"
+        "convert"
+        "preview"
+        "download";
+      padding: 0 12px 40px;
+      gap: 12px;
+    }
+    h1 { font-size: 2rem; }
+    .tagline { font-size: 0.65rem; letter-spacing: 1px; }
+    header { padding: 28px 16px 20px; }
+    .card { padding: 18px; border-radius: 16px; }
+    .file-drop { padding: 22px 12px; }
+    .preview-wrap { min-height: 200px; }
+    .dl-btn { padding: 16px 20px; font-size: 1rem; }
+    #toast { font-size: 0.75rem; padding: 10px 18px; bottom: 20px; }
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px #0008;
+  }
+
+  .card.pink::before { background: linear-gradient(135deg, #ff4d8d18, transparent); }
+  .card.cyan::before { background: linear-gradient(135deg, #4dffee18, transparent); }
+  .card.yellow::before { background: linear-gradient(135deg, #ffe44d18, transparent); }
+  .card.purple::before { background: linear-gradient(135deg, #a855f718, transparent); }
+
+  .card:hover::before { opacity: 1; }
+  .card.pink:hover { border-color: var(--pink); box-shadow: 0 12px 40px #ff4d8d22; }
+  .card.cyan:hover { border-color: var(--cyan); box-shadow: 0 12px 40px #4dffee22; }
+  .card.yellow:hover { border-color: var(--yellow); box-shadow: 0 12px 40px #ffe44d22; }
+  .card.purple:hover { border-color: var(--purple); box-shadow: 0 12px 40px #a855f722; }
+
+  /* card accent line */
+  .card-accent {
+    height: 3px;
+    border-radius: 99px;
+    margin-bottom: 18px;
+  }
+  .pink .card-accent { background: linear-gradient(90deg, var(--pink), #ff9dd8); }
+  .cyan .card-accent { background: linear-gradient(90deg, var(--cyan), #4da8ff); }
+  .yellow .card-accent { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+  .purple .card-accent { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    color: #ddd;
+  }
+
+  /* FILE INPUT */
+  .file-drop {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+
+  .file-drop:hover { border-color: #555; background: #ffffff08; }
+  .pink .file-drop:hover { border-color: var(--pink); }
+  .cyan .file-drop:hover { border-color: var(--cyan); }
+
+  .file-drop input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .drop-label {
+    font-size: 0.85rem;
+    color: #777;
+    font-weight: 700;
+  }
+
+  .drop-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: #444;
+    margin-top: 4px;
+  }
+
+  .preview-wrap {
+    background: #08080f;
+    border-radius: 12px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  /* checkerboard for transparency hint */
+  .preview-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(45deg, #1a1a2a 25%, transparent 25%),
+      linear-gradient(-45deg, #1a1a2a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1a1a2a 75%),
+      linear-gradient(-45deg, transparent 75%, #1a1a2a 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    opacity: 0.4;
+  }
+
+  #canvas {
+    image-rendering: pixelated;
+    position: relative;
+    z-index: 1;
+    border-radius: 4px;
+    display: block;
+    max-width: 100%;
+    max-height: 380px;
+  }
+
+  .preview-placeholder {
+    text-align: center;
+    color: #333;
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    width: 100%;
+  }
+
+  .preview-placeholder .big-icon { font-size: 3rem; margin-bottom: 8px; }
+  .preview-placeholder p {
+    font-size: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    color: #444;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* IMAGE INFO */
+  #imgInfo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #555;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+
+  /* DOWNLOAD BUTTONS */
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    .btn-group { flex-direction: row; }
+    .dl-btn { flex: 1; font-size: 0.82rem; padding: 14px 10px; }
+  }
+
+  .dl-btn {
+    display: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    letter-spacing: 0.5px;
+  }
+
+  .dl-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  .dl-btn:active { transform: scale(0.97); }
+
+  .btn-himg {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    box-shadow: 0 4px 20px #a855f744;
+  }
+
+  .btn-himgc {
+    background: linear-gradient(135deg, var(--cyan), #4da8ff);
+    color: #0d0d14;
+    box-shadow: 0 4px 20px #4dffee44;
+  }
+
+  .dl-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #444;
+    margin-top: 10px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  /* STATUS TOAST */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a2e;
+    border: 1.5px solid #333;
+    border-radius: 99px;
+    padding: 10px 22px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 20px 30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #333;
+    letter-spacing: 1px;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.8;
+  }
+
+  footer a { color: #555; text-decoration: none; }
+  footer a:hover { color: var(--pink); }
 </style>
 </head>
 <body>
 
-<h1>HIMG Tool</h1>
-
-<div class="container">
-
-  <div class="box">
-    <h3>Open HIMG / HIMGC</h3>
-    <input type="file" id="file">
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <h1>HIMG</h1>
   </div>
+  <p class="tagline">Hex Image Format · Human Readable · Open Source</p>
+</header>
 
-  <div class="box">
-    <h3>Convert Image → HIMG</h3>
-    <input type="file" id="pngInput" accept="image/*">
-  </div>
+<main>
 
-  <div class="box">
-    <h3>Preview</h3>
-    <div class="preview-box">
-      <canvas id="canvas"></canvas>
+  <!-- Open HIMG -->
+  <div class="card pink">
+    <div class="card-accent"></div>
+    <h3>📂 Open HIMG / HIMGC</h3>
+    <div class="file-drop">
+      <input type="file" id="file" accept=".himg,.himgc">
+      <div class="drop-icon">🖼️</div>
+      <div class="drop-label">Clique ou arraste aqui</div>
+      <div class="drop-sub">.himg · .himgc</div>
     </div>
   </div>
 
-  <div class="box">
-    <h3>Download</h3>
-    <button id="downloadBtn" onclick="downloadHIMG()">Download .himg</button>
-    <button id="downloadCBtn" onclick="downloadHIMGC()">Download .himgc</button>
+  <!-- Convert -->
+  <div class="card cyan">
+    <div class="card-accent"></div>
+    <h3>🔄 Converter Imagem → HIMG</h3>
+    <div class="file-drop">
+      <input type="file" id="pngInput" accept="image/*">
+      <div class="drop-icon">🎨</div>
+      <div class="drop-label">Clique ou arraste aqui</div>
+      <div class="drop-sub">PNG · JPG · GIF · WEBP</div>
+    </div>
   </div>
 
-</div>
+  <!-- Preview -->
+  <div class="card yellow">
+    <div class="card-accent"></div>
+    <h3>👁️ Preview</h3>
+    <div class="preview-wrap">
+      <div class="preview-placeholder" id="placeholder">
+        <div class="big-icon">🟥🟩<br>🟨🟦</div>
+        <p>nenhuma imagem carregada ainda</p>
+      </div>
+      <canvas id="canvas" style="display:none"></canvas>
+    </div>
+    <div id="imgInfo"></div>
+  </div>
+
+  <!-- Download -->
+  <div class="card purple">
+    <div class="card-accent"></div>
+    <h3>💾 Download</h3>
+    <div class="btn-group">
+      <button id="downloadBtn" class="dl-btn btn-himg" onclick="downloadHIMG()">⬇️ Download .himg</button>
+      <button id="downloadCBtn" class="dl-btn btn-himgc" onclick="downloadHIMGC()">⬇️ Download .himgc</button>
+    </div>
+    <div class="dl-hint" id="dlHint">
+      .himg → texto puro com os pixels em HEX<br>
+      .himgc → versão comprimida (menor)
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://github.com/xicook/himg" target="_blank">github.com/xicook/himg</a>
+  · unlicense · feito com 💙
+</footer>
+
+<div id="toast">✅ Imagem carregada!</div>
 
 <script>
-let currentHIMG = "";
+  let currentHIMG = "";
 
-function fitCanvas(canvas, width, height) {
-  const maxSize = 300;
-  let scale = Math.min(maxSize / width, maxSize / height, 1);
-  canvas.style.width = width * scale + "px";
-  canvas.style.height = height * scale + "px";
-}
-
-function renderHIMG(text) {
-  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
-
-  if (lines[0] !== "HIMG") {
-    alert("Invalid HIMG file");
-    return;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  currentHIMG = text;
-
-  document.getElementById("downloadBtn").style.display = "block";
-  document.getElementById("downloadCBtn").style.display = "block";
-
-  const [width, height] = lines[1].split(" ").map(Number);
-  const data = lines.slice(2);
-
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-
-  canvas.width = width;
-  canvas.height = height;
-
-  fitCanvas(canvas, width, height);
-
-  let y = 0;
-
-  data.forEach(row => {
-    const cols = row.split(" ");
-    let x = 0;
-
-    cols.forEach(hex => {
-      const r = parseInt(hex.substring(0,2), 16);
-      const g = parseInt(hex.substring(2,4), 16);
-      const b = parseInt(hex.substring(4,6), 16);
-
-      ctx.fillStyle = `rgb(${r},${g},${b})`;
-      ctx.fillRect(x, y, 1, 1);
-
-      x++;
-    });
-
-    y++;
-  });
-}
-
-document.getElementById("file").addEventListener("change", async function(e) {
-  const file = e.target.files[0];
-
-  if (file.name.endsWith(".himgc")) {
-    const text = await decompressHIMGC(file);
-    renderHIMG(text);
-  } else {
-    const reader = new FileReader();
-    reader.onload = () => renderHIMG(reader.result);
-    reader.readAsText(file);
+  function fitCanvas(canvas, width, height) {
+    const wrap = canvas.parentElement;
+    const maxW = wrap.clientWidth - 2;
+    const maxH = 380;
+    const scale = Math.min(maxW / width, maxH / height, 8);
+    canvas.style.width = Math.floor(width * scale) + "px";
+    canvas.style.height = Math.floor(height * scale) + "px";
   }
-});
 
-document.getElementById("pngInput").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  const img = new Image();
-
-  img.onload = function() {
-    const dataCanvas = document.createElement("canvas");
-    const dataCtx = dataCanvas.getContext("2d");
-
-    dataCanvas.width = img.width;
-    dataCanvas.height = img.height;
-
-    dataCtx.drawImage(img, 0, 0);
-
-    const data = dataCtx.getImageData(0, 0, img.width, img.height).data;
-
-    let output = "HIMG\n";
-    output += img.width + " " + img.height + "\n";
-
-    let i = 0;
-
-    for (let y = 0; y < img.height; y++) {
-      let row = [];
-
-      for (let x = 0; x < img.width; x++) {
-        const r = data[i++];
-        const g = data[i++];
-        const b = data[i++];
-        i++;
-
-        row.push(
-          r.toString(16).padStart(2, "0").toUpperCase() +
-          g.toString(16).padStart(2, "0").toUpperCase() +
-          b.toString(16).padStart(2, "0").toUpperCase()
-        );
-      }
-
-      output += row.join(" ") + "\n";
+  function renderHIMG(text) {
+    const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+    if (lines[0] !== "HIMG") {
+      showToast("❌ Arquivo HIMG inválido");
+      return;
     }
 
-    currentHIMG = output;
-
+    currentHIMG = text;
     document.getElementById("downloadBtn").style.display = "block";
     document.getElementById("downloadCBtn").style.display = "block";
+    document.getElementById("dlHint").style.display = "block";
+    document.getElementById("placeholder").style.display = "none";
+    document.getElementById("canvas").style.display = "block";
+
+    const [width, height] = lines[1].split(" ").map(Number);
+    const data = lines.slice(2);
 
     const canvas = document.getElementById("canvas");
-    canvas.width = 0;
-    canvas.height = 0;
-  };
+    const ctx = canvas.getContext("2d");
+    canvas.width = width;
+    canvas.height = height;
+    fitCanvas(canvas, width, height);
 
-  img.src = URL.createObjectURL(file);
-});
+    let y = 0;
+    data.forEach(row => {
+      const cols = row.split(" ");
+      let x = 0;
+      cols.forEach(hex => {
+        if (hex.length === 6) {
+          const r = parseInt(hex.substring(0, 2), 16);
+          const g = parseInt(hex.substring(2, 4), 16);
+          const b = parseInt(hex.substring(4, 6), 16);
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fillRect(x, y, 1, 1);
+        }
+        x++;
+      });
+      y++;
+    });
 
-function downloadHIMG() {
-  const blob = new Blob([currentHIMG], { type: "application/x-himg" });
-  const a = document.createElement("a");
+    const info = document.getElementById("imgInfo");
+    info.style.display = "block";
+    info.textContent = `${width} × ${height} px · ${(text.length / 1024).toFixed(1)} KB`;
 
-  a.href = URL.createObjectURL(blob);
-  a.download = "image.himg";
+    showToast("✅ Imagem carregada!");
+  }
 
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+  document.getElementById("file").addEventListener("change", async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.name.endsWith(".himgc")) {
+      const text = await decompressHIMGC(file);
+      renderHIMG(text);
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => renderHIMG(reader.result);
+      reader.readAsText(file);
+    }
+  });
 
-async function downloadHIMGC() {
-  const blob = await compressHIMG(currentHIMG);
+  document.getElementById("pngInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = function() {
+      const dataCanvas = document.createElement("canvas");
+      const dataCtx = dataCanvas.getContext("2d");
+      dataCanvas.width = img.width;
+      dataCanvas.height = img.height;
+      dataCtx.drawImage(img, 0, 0);
+      const data = dataCtx.getImageData(0, 0, img.width, img.height).data;
 
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "image.himgc";
+      let output = "HIMG\n";
+      output += img.width + " " + img.height + "\n";
 
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+      let i = 0;
+      for (let y = 0; y < img.height; y++) {
+        let row = [];
+        for (let x = 0; x < img.width; x++) {
+          const r = data[i++];
+          const g = data[i++];
+          const b = data[i++];
+          i++;
+          row.push(
+            r.toString(16).padStart(2, "0").toUpperCase() +
+            g.toString(16).padStart(2, "0").toUpperCase() +
+            b.toString(16).padStart(2, "0").toUpperCase()
+          );
+        }
+        output += row.join(" ") + "\n";
+      }
 
-async function compressHIMG(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
+      currentHIMG = output;
+      document.getElementById("downloadBtn").style.display = "block";
+      document.getElementById("downloadCBtn").style.display = "block";
+      document.getElementById("dlHint").style.display = "block";
+      document.getElementById("placeholder").style.display = "none";
+      document.getElementById("canvas").style.display = "block";
 
-  const compressed = await new Response(
-    new Blob([data]).stream().pipeThrough(new CompressionStream("gzip"))
-  ).arrayBuffer();
+      // show converted preview
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      fitCanvas(canvas, img.width, img.height);
+      ctx.drawImage(img, 0, 0);
 
-  return new Blob([compressed], { type: "application/x-himgc" });
-}
+      const info = document.getElementById("imgInfo");
+      info.style.display = "block";
+      info.textContent = `${img.width} × ${img.height} px · convertido para HIMG`;
 
-async function decompressHIMGC(file) {
-  const stream = file.stream().pipeThrough(new DecompressionStream("gzip"));
-  return await new Response(stream).text();
-}
+      showToast("🔄 Imagem convertida!");
+    };
+    img.src = URL.createObjectURL(file);
+  });
 
-const params = new URLSearchParams(window.location.search);
-const fileUrl = params.get("file");
+  function downloadHIMG() {
+    const blob = new Blob([currentHIMG], { type: "application/x-himg" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "image.himg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("💾 .himg baixado!");
+  }
 
-if (fileUrl) {
-  fetch(fileUrl)
-    .then(res => res.text())
-    .then(text => renderHIMG(text));
-}
+  async function downloadHIMGC() {
+    const blob = await compressHIMG(currentHIMG);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "image.himgc";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("💾 .himgc baixado!");
+  }
+
+  async function compressHIMG(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const compressed = await new Response(
+      new Blob([data]).stream().pipeThrough(new CompressionStream("gzip"))
+    ).arrayBuffer();
+    return new Blob([compressed], { type: "application/x-himgc" });
+  }
+
+  async function decompressHIMGC(file) {
+    const stream = file.stream().pipeThrough(new DecompressionStream("gzip"));
+    return await new Response(stream).text();
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const fileUrl = params.get("file");
+  if (fileUrl) {
+    fetch(fileUrl).then(res => res.text()).then(text => renderHIMG(text));
+  }
 </script>
 
 </body>
