@@ -117,3 +117,5 @@ HIMG is a simple project to demonstrate how image data can be represented in a h
 ## License
 
 [![License: Public Domain](https://img.shields.io/badge/license-Public%20Domain-blue)](./LICENSE)
+
+please don't use this for Daily use, it's all vibe-coded and too heavy
