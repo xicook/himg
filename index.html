@@ -441,7 +441,7 @@
     <div class="file-drop">
       <input type="file" id="file" accept=".himg,.himgc">
       <div class="drop-icon">🖼️</div>
-      <div class="drop-label">Clique ou arraste aqui</div>
+      <div class="drop-label">Click or drag here</div>
       <div class="drop-sub">.himg · .himgc</div>
     </div>
   </div>
@@ -449,11 +449,11 @@
   <!-- Convert -->
   <div class="card cyan">
     <div class="card-accent"></div>
-    <h3>🔄 Converter Imagem → HIMG</h3>
+    <h3>🔄 Convert Image → HIMG</h3>
     <div class="file-drop">
       <input type="file" id="pngInput" accept="image/*">
       <div class="drop-icon">🎨</div>
-      <div class="drop-label">Clique ou arraste aqui</div>
+      <div class="drop-label">Click or drag here</div>
       <div class="drop-sub">PNG · JPG · GIF · WEBP</div>
     </div>
   </div>
@@ -465,7 +465,7 @@
     <div class="preview-wrap">
       <div class="preview-placeholder" id="placeholder">
         <div class="big-icon">🟥🟩<br>🟨🟦</div>
-        <p>nenhuma imagem carregada ainda</p>
+        <p>no image loaded yet</p>
       </div>
       <canvas id="canvas" style="display:none"></canvas>
     </div>
@@ -481,8 +481,8 @@
       <button id="downloadCBtn" class="dl-btn btn-himgc" onclick="downloadHIMGC()">⬇️ Download .himgc</button>
     </div>
     <div class="dl-hint" id="dlHint">
-      .himg → texto puro com os pixels em HEX<br>
-      .himgc → versão comprimida (menor)
+      .himg → plain text with pixels in HEX<br>
+      .himgc → compressed version (smaller)
     </div>
   </div>
 
@@ -490,7 +490,7 @@
 
 <footer>
   <a href="https://github.com/xicook/himg" target="_blank">github.com/xicook/himg</a>
-  · unlicense · feito com 💙
+  · unlicense · made with 💙
 </footer>
 
 <div id="toast">✅ Imagem carregada!</div>
@@ -517,7 +517,7 @@
   function renderHIMG(text) {
     const lines = text.split("\n").map(l => l.trim()).filter(l => l);
     if (lines[0] !== "HIMG") {
-      showToast("❌ Arquivo HIMG inválido");
+      showToast("❌ Invalid HIMG file");
       return;
     }
 
@@ -558,7 +558,7 @@
     info.style.display = "block";
     info.textContent = `${width} × ${height} px · ${(text.length / 1024).toFixed(1)} KB`;
 
-    showToast("✅ Imagem carregada!");
+    showToast("✅ Image loaded!");
   }
 
   document.getElementById("file").addEventListener("change", async function(e) {
@@ -623,9 +623,9 @@
 
       const info = document.getElementById("imgInfo");
       info.style.display = "block";
-      info.textContent = `${img.width} × ${img.height} px · convertido para HIMG`;
+      info.textContent = `${img.width} × ${img.height} px · converted to HIMG`;
 
-      showToast("🔄 Imagem convertida!");
+      showToast("🔄 Image converted!");
     };
     img.src = URL.createObjectURL(file);
   });
@@ -638,7 +638,7 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    showToast("💾 .himg baixado!");
+    showToast("💾 .himg downloaded!");
   }
 
   async function downloadHIMGC() {
@@ -649,7 +649,7 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    showToast("💾 .himgc baixado!");
+    showToast("💾 .himgc downloaded!");
   }
 
   async function compressHIMG(text) {
